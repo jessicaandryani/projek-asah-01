@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#007bff">
+    <link rel="shortcut icon" href="/favicon.png" />
+    <title>App</title>
+
+    <script type="module" src="/scripts/index.js"></script>
+  </head>
+  <body>
+    <a href="#main-content" class="skip-to-content">Skip to content</a>
+    <header>
+      <div class="main-header container">
+        <a class="brand-name" href="#/">
+          <img src="/images/logo.png" alt="App Logo" height="40">
+        </a>
+
+        <nav id="navigation-drawer" class="navigation-drawer">
+            <ul id="nav-list" class="nav-list">
+              <li><a href="#/">Beranda</a></li>
+              <li><a href="#/about">About</a></li>
+                    
+              <li data-nav="logged-out"><a href="#/login">Login</a></li>
+              <li data-nav="logged-out"><a href="#/register">Register</a></li>
+                    
+              <li data-nav="logged-in"><a href="#" id="logout-link">Logout</a></li>
+            </ul>
+        </nav>
+        <button id="notification-button" class="drawer-button" aria-label="Aktifkan Notifikasi">🔔</button>
+
+        <button id="drawer-button" class="drawer-button">☰</button>
+      </div>
+    </header>
+
+    <main id="main-content" class="main-content"></main>
+  </body>
+</html>
