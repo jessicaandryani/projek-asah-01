@@ -15,16 +15,14 @@ L.Icon.Default.mergeOptions({
 
 export default class HomePage {
   #map = null;
+  #stories = []; // Simpan data cerita di sini
 
   async render() {
     return `
       <section class="container">
-        
         <h1>Stories Map</h1>
         <div id="map-container"></div>
-        
         <a href="#/add-story" class="btn" id="add-story-button">Add New Story</a>
-        
         <h2>Stories List</h2>
         <div id="stories-list-container">
           <p>Loading stories...</p>
@@ -42,12 +40,16 @@ export default class HomePage {
     }
     const map = this._initializeMap();
     const storiesContainer = document.querySelector('#stories-list-container');
+    
     try {
       console.log('Mencoba mengambil data dari API...');
       const stories = await getAllStories(token);
+      this.#stories = stories; // Simpan cerita ke properti class
+      
       console.log('Berhasil! Data dari API:', stories);
       this._renderStories(storiesContainer, stories);
       this._addMarkersToMap(map, stories);
+      
       console.log('Menyimpan data ke IndexedDB...');
       await DatabaseHelper.clearStories();
       await DatabaseHelper.putStories(stories);
@@ -55,6 +57,8 @@ export default class HomePage {
     } catch (error) {
       console.warn('Gagal mengambil dari API. Mencoba mengambil dari IndexedDB...', error);
       const stories = await DatabaseHelper.getAllStories();
+      this.#stories = stories; // Ambil cerita dari cache
+      
       if (stories && stories.length > 0) {
         console.log('Berhasil! Menampilkan data dari IndexedDB:', stories);
         this._renderStories(storiesContainer, stories);
@@ -64,6 +68,8 @@ export default class HomePage {
         storiesContainer.innerHTML = `<p>Anda sedang offline dan data belum tersimpan.</p>`;
       }
     }
+    
+    this._attachFavoriteButtonListeners();
   }
 
   _initializeMap() {
@@ -108,9 +114,42 @@ export default class HomePage {
             <h3 class="story-name">${story.name}</h3>
             <p class="story-description">${story.description}</p>
             <p class="story-date">Dibuat pada: ${new Date(story.createdAt).toLocaleDateString()}</p>
+            
+            <button 
+              type="button" 
+              class="btn-favorite" 
+              aria-label="Tambahkan ke favorit" 
+              data-id="${story.id}">
+              ❤️
+            </button>
+
           </div>
         </article>
       `;
+    });
+  }
+  
+  _attachFavoriteButtonListeners() {
+    const favoriteButtons = document.querySelectorAll('.btn-favorite');
+    favoriteButtons.forEach(button => {
+      button.addEventListener('click', async (event) => {
+        const storyId = event.target.dataset.id;
+        
+        // Cari cerita lengkap dari data yang sudah kita simpan
+        const storyToFavorite = this.#stories.find(story => story.id === storyId);
+        
+        if (storyToFavorite) {
+          try {
+            await DatabaseHelper.addFavorite(storyToFavorite);
+            alert('Cerita berhasil ditambahkan ke Favorit!');
+            event.target.disabled = true;
+            event.target.innerText = '✅';
+          } catch (error) {
+            console.error('Gagal menambah favorit:', error);
+            alert('Gagal menyimpan ke favorit.');
+          }
+        }
+      });
     });
   }
 }
