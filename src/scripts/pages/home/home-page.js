@@ -15,7 +15,7 @@ L.Icon.Default.mergeOptions({
 
 export default class HomePage {
   #map = null;
-  #stories = []; // Simpan data cerita di sini
+  #stories = [];
 
   async render() {
     return `
@@ -44,7 +44,7 @@ export default class HomePage {
     try {
       console.log('Mencoba mengambil data dari API...');
       const stories = await getAllStories(token);
-      this.#stories = stories; // Simpan cerita ke properti class
+      this.#stories = stories; 
       
       console.log('Berhasil! Data dari API:', stories);
       this._renderStories(storiesContainer, stories);
@@ -57,7 +57,7 @@ export default class HomePage {
     } catch (error) {
       console.warn('Gagal mengambil dari API. Mencoba mengambil dari IndexedDB...', error);
       const stories = await DatabaseHelper.getAllStories();
-      this.#stories = stories; // Ambil cerita dari cache
+      this.#stories = stories; 
       
       if (stories && stories.length > 0) {
         console.log('Berhasil! Menampilkan data dari IndexedDB:', stories);
@@ -135,7 +135,7 @@ export default class HomePage {
       button.addEventListener('click', async (event) => {
         const storyId = event.target.dataset.id;
         
-        // Cari cerita lengkap dari data yang sudah kita simpan
+       
         const storyToFavorite = this.#stories.find(story => story.id === storyId);
         
         if (storyToFavorite) {
